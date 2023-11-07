@@ -118,7 +118,7 @@ contract callRouter{
         instance = new PairCoreSetup();
     }
 
-    function checkIfAttackSuccess() public{
+    function checkIfAttackSuccess() public returns(bool){
         instance.exploit();
         if(instance.beforeAttack() < instance.afterAttack()){
             return true;
