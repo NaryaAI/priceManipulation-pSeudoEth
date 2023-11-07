@@ -72,7 +72,7 @@ contract PairCoreSetup is Test {
 
     function prepare1() public {
         // 准备好钱，然后添加流动性
-        deal(address(weth),address(this),AMOUNT);
+        // deal(address(weth),address(this),AMOUNT);
         pETH.mint(AMOUNT);
 
         // 添加流动性
@@ -85,7 +85,7 @@ contract PairCoreSetup is Test {
 
     function prepare2() public {
         // 准备之前攻击
-        deal(address(weth),address(this),AMOUNT);
+        // deal(address(weth),address(this),AMOUNT);
         beforeAttack = weth.balanceOf(address(this));
 
         address[] memory path = new address [](2);
