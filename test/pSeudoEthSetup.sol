@@ -11,16 +11,16 @@ import "../src/pETH.sol";
 
 contract deployer{
     // 部署WETH
-    function deployHelper_weth() public returns (address addr) {
-        bytes memory bytecode = WETH9_BYTECODE;
+    function deployHelper_weth(bytes memory _bytecode) public returns (address addr) {
+        bytes memory bytecode = _bytecode;
         assembly {
             addr := create(0, add(bytecode, 0x20), mload(bytecode))
         }
     }
 
     // 部署u_factory
-    function deployHelper_u_factory() public returns (address addr) {
-        bytes memory bytecode = BYTECODE_factory;
+    function deployHelper_u_factory(bytes memory _bytecode) public returns (address addr) {
+        bytes memory bytecode = _bytecode;
         // 构造器有参数
         bytes memory bytecode_withConstructor = abi.encodePacked(bytecode, abi.encode(address(msg.sender)));
         assembly {
@@ -29,8 +29,8 @@ contract deployer{
     }
 
     // 部署u_router
-    function deployHelper_u_router(address _u_factory, address _weth) public returns (address addr) {
-        bytes memory bytecode = BYTECODE_router;
+    function deployHelper_u_router(address _u_factory, address _weth,bytes memory _bytecode) public returns (address addr) {
+        bytes memory bytecode = _bytecode;
         // 构造器有参数
         bytes memory bytecode_withConstructor = abi.encodePacked(bytecode, abi.encode(address(_u_factory), address(_weth)));
         assembly {
