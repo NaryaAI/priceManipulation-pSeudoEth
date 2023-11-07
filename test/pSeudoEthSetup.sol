@@ -118,7 +118,7 @@ contract PairCoreSetup is Test {
 }
 
 contract callRouter{
-    PairCoreSetup instance;
+    PairCoreSetup public instance;
     
     constructor( address _weth, address _u_factory, address _u_router) public{
         instance = new PairCoreSetup(  _weth, _u_factory, _u_router );
@@ -130,6 +130,14 @@ contract callRouter{
         }else{
             return false;
         }
+    }
+
+    function prepare1() public {
+        instance.prepare1();
+    }
+
+    function prepare2() public {
+        instance.prepare2();
     }
 
     function skim() public{
