@@ -11,12 +11,12 @@ import "../src/pETH.sol";
 
 contract PairCoreSetup is Test {
     IWETH9 public weth;
-    ERC20_pETH pETH;
+    ERC20_pETH public pETH;
 
     // uniswapV2系统
-    Iu_factory u_factory;
-    Iu_router u_router;
-    IPair pair;
+    Iu_factory public u_factory;
+    Iu_router public u_router;
+    IPair public pair;
 
     uint256 public constant AMOUNT = 100000000000000;
     uint256 public beforeAttack;
