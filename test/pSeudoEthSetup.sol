@@ -116,8 +116,8 @@ contract PairCoreSetup is Test {
 contract callRouter{
     PairCoreSetup instance;
     
-    constructor( address _weth, address _pETH, address _u_factory, address _u_router) public{
-        instance = new PairCoreSetup(  _weth, _pETH, _u_factory, _u_router );
+    constructor( address _weth, address _u_factory, address _u_router) public{
+        instance = new PairCoreSetup(  _weth, _u_factory, _u_router );
     }
 
     function checkIfAttackSuccess() public returns(bool){
