@@ -29,8 +29,8 @@ contract deployer{
     }
 
     // 部署u_router
-    function deployHelper_u_router(address _u_factory, address _weth,bytes memory _bytecode) public returns (address addr) {
-        bytes memory bytecode = _bytecode;
+    function deployHelper_u_router(address _u_factory, address _weth) public returns (address addr) {
+        bytes memory bytecode = BYTECODE_router;
         // 构造器有参数
         bytes memory bytecode_withConstructor = abi.encodePacked(bytecode, abi.encode(address(_u_factory), address(_weth)));
         assembly {
@@ -52,7 +52,7 @@ contract PairCoreSetup is Test {
     uint256 public beforeAttack;
     uint256 public afterAttack;
 
-    constructor(address _weth, address _pETH, address _u_factory, address _u_router) public{
+    constructor(address _weth, address _u_factory, address _u_router) public{
         // 部署WETH9
         weth = IWETH9(_weth);
 
