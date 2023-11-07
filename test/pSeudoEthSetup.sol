@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "forge-std/Test.sol";
 import "./interface.sol";
 import "../src/factory.sol";
 import "../src/pair.sol";
@@ -9,7 +8,7 @@ import "../src/router.sol";
 import "../src/weth9.sol";
 import "../src/pETH.sol";
 
-contract PairCoreSetup is Test {
+contract PairCoreSetup {
     IWETH9 public weth;
     ERC20_pETH public pETH;
 
@@ -25,23 +24,18 @@ contract PairCoreSetup is Test {
     constructor() public{
         // 部署WETH9
         weth = IWETH9(deployHelper_weth());
-        vm.label(address(weth), "weth");
 
         // 部署漏洞合约
         pETH = new ERC20_pETH("pETH","pETH");
-        vm.label(address(pETH), "pETH");
 
         // 创建uniswapV2系统
         u_factory = Iu_factory(deployHelper_u_factory());
-        vm.label(address(u_factory), "u_factory");
 
         // 部署u_router
         u_router = Iu_router(deployHelper_u_router(address(u_factory), address(weth)));
-        vm.label(address(u_router), "u_router");
 
         // 部署pair
         pair = IPair(u_factory.createPair(address(weth),address(pETH)));
-        vm.label(address(pair), "pair");
 
         // 准备好钱，然后添加流动性
         deal(address(weth),address(this),AMOUNT);
