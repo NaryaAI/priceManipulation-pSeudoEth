@@ -64,10 +64,13 @@ contract PairCoreSetup is Test {
         u_router.swapExactTokensForTokensSupportingFeeOnTransferTokens( AMOUNT, 0, path, address(this), type(uint).max);
     }
 
-    function exploit() public{
+    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
+        address _pETH,
+        address _weth
+    ) public{
         // this.skim();
         address[] memory path = new address [](2);  
-        (path[0], path[1]) = (address(pETH), address(weth));
+        (path[0], path[1]) = (address(_pETH), address(_weth));
         uint256 pEth_amount = pETH.balanceOf(address(this));
 
         u_router.swapExactTokensForTokensSupportingFeeOnTransferTokens(pEth_amount, 0, path, address(this), type(uint).max);
@@ -119,7 +122,6 @@ contract callRouter{
     }
 
     function checkIfAttackSuccess() public returns(bool){
-        instance.exploit();
         if(instance.beforeAttack() < instance.afterAttack()){
             return true;
         }else{
