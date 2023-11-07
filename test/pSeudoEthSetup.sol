@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import "forge-std/Test.sol";
 import "./interface.sol";
 import "../src/factory.sol";
 import "../src/pair.sol";
@@ -8,7 +9,37 @@ import "../src/router.sol";
 import "../src/weth9.sol";
 import "../src/pETH.sol";
 
-contract PairCoreSetup {
+contract deployer{
+    // 部署WETH
+    function deployHelper_weth() public returns (address addr) {
+        bytes memory bytecode = WETH9_BYTECODE;
+        assembly {
+            addr := create(0, add(bytecode, 0x20), mload(bytecode))
+        }
+    }
+
+    // 部署u_factory
+    function deployHelper_u_factory() public returns (address addr) {
+        bytes memory bytecode = BYTECODE_factory;
+        // 构造器有参数
+        bytes memory bytecode_withConstructor = abi.encodePacked(bytecode, abi.encode(address(msg.sender)));
+        assembly {
+            addr := create(0, add(bytecode_withConstructor, 0x20), mload(bytecode_withConstructor))
+        }
+    }
+
+    // 部署u_router
+    function deployHelper_u_router(address _u_factory, address _weth) public returns (address addr) {
+        bytes memory bytecode = BYTECODE_router;
+        // 构造器有参数
+        bytes memory bytecode_withConstructor = abi.encodePacked(bytecode, abi.encode(address(_u_factory), address(_weth)));
+        assembly {
+            addr := create(0, add(bytecode_withConstructor, 0x20), mload(bytecode_withConstructor))
+        }
+    }
+}
+
+contract PairCoreSetup is Test {
     IWETH9 public weth;
     ERC20_pETH public pETH;
 
@@ -21,18 +52,18 @@ contract PairCoreSetup {
     uint256 public beforeAttack;
     uint256 public afterAttack;
 
-    constructor() public{
+    constructor(address _weth, address _pETH, address _u_factory, address _u_router) public{
         // 部署WETH9
-        weth = IWETH9(deployHelper_weth());
+        weth = IWETH9(_weth);
 
         // 部署漏洞合约
         pETH = new ERC20_pETH("pETH","pETH");
 
         // 创建uniswapV2系统
-        u_factory = Iu_factory(deployHelper_u_factory());
+        u_factory = Iu_factory(_u_factory);
 
         // 部署u_router
-        u_router = Iu_router(deployHelper_u_router(address(u_factory), address(weth)));
+        u_router = Iu_router(_u_router);
 
         // 部署pair
         pair = IPair(u_factory.createPair(address(weth),address(pETH)));
@@ -79,40 +110,14 @@ contract PairCoreSetup {
         // beforeAttack = 0;
     }
 
-    // 部署WETH
-    function deployHelper_weth() public returns (address addr) {
-        bytes memory bytecode = WETH9_BYTECODE;
-        assembly {
-            addr := create(0, add(bytecode, 0x20), mload(bytecode))
-        }
-    }
 
-    // 部署u_factory
-    function deployHelper_u_factory() public returns (address addr) {
-        bytes memory bytecode = BYTECODE_factory;
-        // 构造器有参数
-        bytes memory bytecode_withConstructor = abi.encodePacked(bytecode, abi.encode(address(msg.sender)));
-        assembly {
-            addr := create(0, add(bytecode_withConstructor, 0x20), mload(bytecode_withConstructor))
-        }
-    }
-
-    // 部署u_router
-    function deployHelper_u_router(address _u_factory, address _weth) public returns (address addr) {
-        bytes memory bytecode = BYTECODE_router;
-        // 构造器有参数
-        bytes memory bytecode_withConstructor = abi.encodePacked(bytecode, abi.encode(address(_u_factory), address(_weth)));
-        assembly {
-            addr := create(0, add(bytecode_withConstructor, 0x20), mload(bytecode_withConstructor))
-        }
-    }
 }
 
 contract callRouter{
     PairCoreSetup instance;
     
-    constructor() public{
-        instance = new PairCoreSetup();
+    constructor( address _weth, address _pETH, address _u_factory, address _u_router) public{
+        instance = new PairCoreSetup(  _weth, _pETH, _u_factory, _u_router );
     }
 
     function checkIfAttackSuccess() public returns(bool){
