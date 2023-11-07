@@ -68,6 +68,9 @@ contract PairCoreSetup is Test {
         // 部署pair
         pair = IPair(u_factory.createPair(address(weth),address(pETH)));
 
+    }
+
+    function prepare1() public {
         // 准备好钱，然后添加流动性
         deal(address(weth),address(this),AMOUNT);
         pETH.mint(AMOUNT);
@@ -78,8 +81,9 @@ contract PairCoreSetup is Test {
         weth.approve(address(pair),type(uint).max);
         pETH.approve(address(pair),type(uint).max);
         u_router.addLiquidity(address(pETH),address(weth),AMOUNT,AMOUNT,0,0,address(this),type(uint).max);
+    }
 
-
+    function prepare2() public {
         // 准备之前攻击
         deal(address(weth),address(this),AMOUNT);
         beforeAttack = weth.balanceOf(address(this));
